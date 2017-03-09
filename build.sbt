@@ -29,6 +29,8 @@ scalacOptions ++= Seq(
 
 scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-no-link-warnings")
 
+resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
+
 libraryDependencies ++= Seq(
   "com.github.blemale" %% "scaffeine" % "2.0.0",
   "io.dropwizard.metrics" % "metrics-core" % "3.1.2",
