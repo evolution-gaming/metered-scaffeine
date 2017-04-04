@@ -34,7 +34,8 @@ resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
 libraryDependencies ++= Seq(
   "com.github.blemale" %% "scaffeine" % "2.0.0",
   "io.dropwizard.metrics" % "metrics-core" % "3.1.2",
-  "nl.grons" %% "metrics-scala" % "3.5.2_a2.3"
+  "nl.grons" %% "metrics-scala" % "3.5.2_a2.3",
+  "org.scalatest" %% "scalatest" % "3.0.1" % Test excludeAll(ExclusionRule("org.scala-lang", "scala-reflect"))
 )
 
 licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")))

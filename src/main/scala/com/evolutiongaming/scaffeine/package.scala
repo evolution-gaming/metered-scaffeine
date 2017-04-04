@@ -4,10 +4,15 @@ import java.util
 import java.util.Collections
 import java.util.concurrent.AbstractExecutorService
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService}
+import com.github.blemale.scaffeine.Scaffeine
+
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService, Future}
 import scala.concurrent.duration.TimeUnit
 
 package object scaffeine {
+
+  val Scaffeine = com.github.blemale.scaffeine.Scaffeine
+
   implicit def executor(ec: ExecutionContext): ExecutionContextExecutorService = ec match {
     case eces: ExecutionContextExecutorService => eces
     case other => new AbstractExecutorService with ExecutionContextExecutorService {
@@ -19,6 +24,17 @@ package object scaffeine {
       override def execute(runnable: Runnable): Unit = other execute runnable
       override def reportFailure(t: Throwable): Unit = other reportFailure t
       override def awaitTermination(length: Long,unit: TimeUnit): Boolean = false
+    }
+  }
+
+  implicit class AsyncCacheOps(val c: Scaffeine[Any, Any]) extends AnyVal {
+
+    def asyncCache[K, V](loader: (K) => Future[Option[V]])(implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] = {
+      val l = loader andThen { _ map {
+        case Some(v) => v
+        case _ => null.asInstanceOf[V]
+      }}
+      new ScalaAsyncLoadingCache[K, V](c.buildAsyncFuture[K, V](l).underlying)
     }
   }
 
