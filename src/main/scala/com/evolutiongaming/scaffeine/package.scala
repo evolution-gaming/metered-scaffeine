@@ -34,7 +34,7 @@ package object scaffeine {
         case Some(v) => v
         case _ => null.asInstanceOf[V]
       }}
-      new ScalaAsyncLoadingCache[K, V](c.buildAsyncFuture[K, V](l).underlying)
+      new ScalaAsyncLoadingCache[K, V](c.buildAsyncFuture[K, V](l).underlying)(ec)
     }
   }
 
