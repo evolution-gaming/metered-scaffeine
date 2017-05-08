@@ -23,9 +23,9 @@ class MetricsStatsCounter(registry: MetricRegistry, prefix: String) extends Stat
 
   override def snapshot = new CacheStats(hits.count, misses.count, success.count, failure.count, time.count, eviction.count, 0)
 
-  override def recordMisses(i: Int): Unit = misses += i
+  override def recordMisses(i: Int): Unit = misses += i.toLong
 
-  override def recordHits(i: Int): Unit = hits += i
+  override def recordHits(i: Int): Unit = hits += i.toLong
 
   override def recordEviction(): Unit = eviction.inc()
 

@@ -6,6 +6,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 import com.evolutiongaming.scaffeine._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NoStackTrace
 
 class ScaffeineSpec extends AsyncFlatSpec with Matchers {
 
@@ -59,7 +60,7 @@ class ScaffeineSpec extends AsyncFlatSpec with Matchers {
     cache.get(206).failed map { _ shouldBe CacheException  }
   }
 
-  object CacheException extends Exception
+  object CacheException extends Exception with NoStackTrace
 
   private def cache = Scaffeine().asyncCache{ k: Int => println(""); k match {
     case i if i < 50              => Future.successful(Some(s"$k"))

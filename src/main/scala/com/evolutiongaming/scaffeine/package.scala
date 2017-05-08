@@ -13,7 +13,7 @@ package object scaffeine {
 
   val Scaffeine = com.github.blemale.scaffeine.Scaffeine
 
-  implicit def executor(ec: ExecutionContext): ExecutionContextExecutorService = ec match {
+  private def executor(ec: ExecutionContext): ExecutionContextExecutorService = ec match {
     case eces: ExecutionContextExecutorService => eces
     case other => new AbstractExecutorService with ExecutionContextExecutorService {
       override def prepare(): ExecutionContext = other
@@ -30,12 +30,9 @@ package object scaffeine {
   implicit class AsyncCacheOps(val c: Scaffeine[Any, Any]) extends AnyVal {
 
     def asyncCache[K, V](loader: (K) => Future[Option[V]])(implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] = {
-      val l = loader andThen { _ map {
-        case Some(v) => v
-        case _ => null.asInstanceOf[V]
-      }}
+      val l = loader andThen { _ map { _ getOrElse null.asInstanceOf[V] }}
 
-      new ScalaAsyncLoadingCache[K, V](c.executor(ec).buildAsyncFuture[K, V](l).underlying)(ec)
+      new ScalaAsyncLoadingCache[K, V](c.executor(executor(ec)).buildAsyncFuture[K, V](l).underlying)(ec)
     }
   }
 

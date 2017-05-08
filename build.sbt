@@ -12,14 +12,18 @@ organizationHomepage := Some(url("http://evolutiongaming.com"))
 
 bintrayOrganization := Some("evolutiongaming")
 
-scalaVersion := "2.11.11"
+scalaVersion := "2.12.2"
+
+crossScalaVersions := Seq("2.12.2", "2.11.11")
+
+releaseCrossBuild := true
 
 scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-feature",
   "-unchecked",
   "-deprecation",
-//  "-Xfatal-warnings",
+  "-Xfatal-warnings",
   "-Xlint",
   "-Yno-adapted-args",
   "-Ywarn-dead-code",
@@ -32,10 +36,10 @@ scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-no-link-warnin
 resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
 
 libraryDependencies ++= Seq(
-  "com.github.blemale" %% "scaffeine" % "2.0.0",
-  "io.dropwizard.metrics" % "metrics-core" % "3.1.2",
-  "nl.grons" %% "metrics-scala" % "3.5.2_a2.3",
-  "org.scalatest" %% "scalatest" % "3.0.1" % Test excludeAll(ExclusionRule("org.scala-lang", "scala-reflect"))
+  "com.github.blemale" %% "scaffeine" % "2.1.0",
+  "io.dropwizard.metrics" % "metrics-core" % "3.2.1",
+  "nl.grons" %% "metrics-scala" % "3.5.6",
+  "org.scalatest" %% "scalatest" % "3.0.3" % Test
 )
 
 licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")))
