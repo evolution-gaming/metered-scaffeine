@@ -4,6 +4,7 @@ import java.util
 import java.util.Collections
 import java.util.concurrent.AbstractExecutorService
 
+import com.codahale.metrics.MetricRegistry
 import com.github.blemale.scaffeine.Scaffeine
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService, Future}
@@ -29,11 +30,20 @@ package object scaffeine {
 
   implicit class AsyncCacheOps(val c: Scaffeine[Any, Any]) extends AnyVal {
 
-    def asyncCache[K, V](loader: (K) => Future[Option[V]])(implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] = {
-      val l = loader andThen { _ map { _ getOrElse null.asInstanceOf[V] }}
+    def asyncCache[K, V](loader: (K) => Future[Option[V]])(implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] =
+      createCache(c, loader, None)
 
-      new ScalaAsyncLoadingCache[K, V](c.executor(executor(ec)).buildAsyncFuture[K, V](l).underlying)(ec)
+    def asyncCache[K, V](loader: (K) => Future[Option[V]], stats: (String, MetricRegistry))(implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] = {
+
+      val statsCounter = new MetricsStatsCounter(stats._2, stats._1)
+
+      createCache(c.recordStats(() => statsCounter), loader, Some(statsCounter))
     }
   }
 
+  private def createCache[K, V](c: Scaffeine[Any, Any], loader: (K) => Future[Option[V]], statsCounter: Option[MetricsStatsCounter])(implicit ec: ExecutionContext) = {
+    val l = loader andThen { _ map { _ getOrElse null.asInstanceOf[V] }}
+
+    new ScalaAsyncLoadingCache[K, V](c.executor(executor(ec)).buildAsyncFuture[K, V](l).underlying, statsCounter)(ec)
+  }
 }

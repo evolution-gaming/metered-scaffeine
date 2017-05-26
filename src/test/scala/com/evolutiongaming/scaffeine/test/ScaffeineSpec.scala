@@ -62,7 +62,7 @@ class ScaffeineSpec extends AsyncFlatSpec with Matchers {
 
   object CacheException extends Exception with NoStackTrace
 
-  private def cache = Scaffeine().asyncCache{ k: Int => println(""); k match {
+  private def cache = Scaffeine().asyncCache{ k: Int => k match {
     case i if i < 50              => Future.successful(Some(s"$k"))
     case i if i >= 50 && i < 100  => Future(Some(s"$k"))(ExecutionContext.global)
     case i if i >= 100 && i < 200 => Future.successful(None)

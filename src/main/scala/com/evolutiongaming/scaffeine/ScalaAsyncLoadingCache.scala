@@ -6,7 +6,9 @@ import com.github.benmanes.caffeine.cache.{AsyncLoadingCache => CaffeineAsyncLoa
 import scala.compat.java8.FutureConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-class ScalaAsyncLoadingCache[K, V](override val underlying: CaffeineAsyncLoadingCache[K, V])
+class ScalaAsyncLoadingCache[K, V](
+  override val underlying: CaffeineAsyncLoadingCache[K, V],
+  statsCounter: Option[MetricsStatsCounter] = None)
   (implicit ec: ExecutionContext) extends AsyncLoadingCache(underlying) {
 
   def getAsync(key: K): Future[Option[V]] = {
@@ -16,5 +18,8 @@ class ScalaAsyncLoadingCache[K, V](override val underlying: CaffeineAsyncLoading
     }).map(Option(_))
   }
 
-  def getSync(key: K): Option[V] = Option(underlying.synchronous().get(key))
+  def getSync(key: K): Option[V] = {
+    statsCounter.foreach { _.recordBlockingCall() }
+    Option(underlying.synchronous().get(key))
+  }
 }

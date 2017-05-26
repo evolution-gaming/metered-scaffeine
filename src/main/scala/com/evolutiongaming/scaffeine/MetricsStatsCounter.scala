@@ -21,6 +21,8 @@ class MetricsStatsCounter(registry: MetricRegistry, prefix: String) extends Stat
 
   private val time = metrics.timer("load_time")
 
+  private val blockingCounter = metrics.counter("blocking_calls")
+
   override def snapshot = new CacheStats(hits.count, misses.count, success.count, failure.count, time.count, eviction.count, 0)
 
   override def recordMisses(i: Int): Unit = misses += i.toLong
@@ -37,5 +39,9 @@ class MetricsStatsCounter(registry: MetricRegistry, prefix: String) extends Stat
   override def recordLoadSuccess(l: Long): Unit = {
     success.inc()
     time.update(Duration.fromNanos(l))
+  }
+
+  def recordBlockingCall(): Unit = {
+    blockingCounter.inc()
   }
 }
