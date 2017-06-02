@@ -39,6 +39,7 @@ libraryDependencies ++= Seq(
   "com.github.blemale" %% "scaffeine" % "2.1.0",
   "io.dropwizard.metrics" % "metrics-core" % "3.2.1",
   "nl.grons" %% "metrics-scala" % "3.5.6",
+  "com.evolutiongaming" %% "executor-tools" % "1.0.0",
   "org.scalatest" %% "scalatest" % "3.0.3" % Test
 )
 

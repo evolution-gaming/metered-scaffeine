@@ -4,6 +4,7 @@ import java.util.concurrent.CompletionException
 
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import com.evolutiongaming.scaffeine._
+import com.github.blemale.scaffeine.Scaffeine
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NoStackTrace
@@ -11,7 +12,7 @@ import scala.util.control.NoStackTrace
 class ScaffeineSpec extends AsyncFlatSpec with Matchers {
 
   it should "return existing cached value when called synchronously" in {
-    cache getSync(5) shouldEqual Some("5")
+    cache getBlocking(5) shouldEqual Some("5")
   }
 
   it should "return existing cached value when called asynchronously" in {
@@ -19,11 +20,11 @@ class ScaffeineSpec extends AsyncFlatSpec with Matchers {
   }
 
   it should "return existing cached value when called asynchronously with Option support" in {
-    cache getAsync(3) map { _ shouldEqual Some("3") }
+    cache getFuture(3) map { _ shouldEqual Some("3") }
   }
 
   it should "return existing cached value in future when called synchronously" in {
-    cache getSync(55) shouldEqual Some("55")
+    cache getBlocking(55) shouldEqual Some("55")
   }
 
   it should "return existing cached value in future when called asynchronously" in {
@@ -31,15 +32,15 @@ class ScaffeineSpec extends AsyncFlatSpec with Matchers {
   }
 
   it should "return existing cached value in future when called asynchronously with Option support" in {
-    cache getAsync(53) map { _ shouldEqual Some("53") }
+    cache getFuture(53) map { _ shouldEqual Some("53") }
   }
 
   it should "return None when called synchronously for non existent value" in {
-    cache getSync(104) shouldEqual None
+    cache getBlocking(104) shouldEqual None
   }
 
   it should "return None when called asynchronously for non existent value" in {
-    cache getAsync(105) map { _ shouldEqual None }
+    cache getFuture(105) map { _ shouldEqual None }
   }
 
   it should "return null when called asynchronously for non existent value without Option support" in {
@@ -48,12 +49,12 @@ class ScaffeineSpec extends AsyncFlatSpec with Matchers {
   
   it should "return None when called synchronously for a key which fails to load a value" in {
     assertThrows[CompletionException] {
-      cache getSync(204)
+      cache getBlocking(204)
     }
   }
 
   it should "return None when called asynchronously for a key which fails to load a value" in {
-    cache.getAsync(205).failed map { _ shouldBe CacheException  }
+    cache.getFuture(205).failed map { _ shouldBe CacheException  }
   }
 
   it should "return null when called asynchronously for a key which fails to load a value without Option support" in {

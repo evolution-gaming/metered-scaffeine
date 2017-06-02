@@ -1,2 +1,2 @@
 # metered-scaffeine [![Build Status](https://travis-ci.org/evolution-gaming/metered-scaffeine.svg)](https://travis-ci.org/evolution-gaming/metered-scaffeine) [![Coverage Status](https://coveralls.io/repos/evolution-gaming/metered-scaffeine/badge.svg)](https://coveralls.io/r/evolution-gaming/metered-scaffeine) [ ![version](https://api.bintray.com/packages/evolutiongaming/maven/metered-scaffeine/images/download.svg) ](https://bintray.com/evolutiongaming/maven/metered-scaffeine/_latestVersion)
-scaffeine cache integrated with dropwizzard metrics and support for scala ExecutionContext
+scaffeine cache integrated with dropwizard metrics and support for scala ExecutionContext
