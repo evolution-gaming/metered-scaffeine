@@ -24,8 +24,9 @@ class ScalaAsyncLoadingCache[K, V](
   }
 
   def getBlocking(key: K): Option[V] = {
-    if (!(underlying get key).isDone) statsCounter foreach { _.recordBlockingCall() }
-    Option(underlying.synchronous().get(key))
+    val futureValue = underlying get key
+    if (!futureValue.isDone) statsCounter foreach { _.recordBlockingCall() }
+    Option(futureValue.get())
   }
 }
 
