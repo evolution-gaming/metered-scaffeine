@@ -1,44 +1,48 @@
 package com.evolutiongaming.scaffeine
 
-import com.codahale.metrics.MetricRegistry
 import com.github.benmanes.caffeine.cache.stats.{CacheStats, StatsCounter}
-import nl.grons.metrics.scala.{MetricBuilder, MetricName}
+import io.prometheus.client.{CollectorRegistry, Counter}
 
 import scala.concurrent.duration.Duration
 
-class MetricsStatsCounter(registry: MetricRegistry, prefix: String) extends StatsCounter {
-  private val metrics = new MetricBuilder(MetricName(prefix), registry)
+class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends StatsCounter {
 
-  private val misses = metrics.counter("misses")
+  private def createCounter(name: String): Counter = {
+    val c = Counter.build().name(s"${prefix}_$name".replaceAll("\\.", "_")).help(s"$prefix $name").create()
+    registry.register(c)
+    c
+  }
 
-  private val hits = metrics.counter("hits")
+  private val misses = createCounter("misses")
 
-  private val eviction = metrics.counter("evictions")
+  private val hits = createCounter("hits")
 
-  private val failure = metrics.counter("load_failure")
+  private val eviction = createCounter("evictions")
 
-  private val success = metrics.counter("load_success")
+  private val failure = createCounter("load_failure")
 
-  private val time = metrics.timer("load_time")
+  private val success = createCounter("load_success")
 
-  private val blockingCounter = metrics.counter("blocking_calls")
+  private val time = createCounter("load_time")
 
-  override def snapshot = new CacheStats(hits.count, misses.count, success.count, failure.count, time.count, eviction.count, 0)
+  private val blockingCounter = createCounter("blocking_calls")
 
-  override def recordMisses(i: Int): Unit = misses += i.toLong
+  override def snapshot = new CacheStats(hits.get.toLong, misses.get.toLong, success.get.toLong, failure.get.toLong, time.get.toLong, eviction.get.toLong, 0)
 
-  override def recordHits(i: Int): Unit = hits += i.toLong
+  override def recordMisses(i: Int): Unit = misses.inc(i.toDouble)
+
+  override def recordHits(i: Int): Unit = hits.inc(i.toDouble)
 
   override def recordEviction(): Unit = eviction.inc()
 
   override def recordLoadFailure(l: Long): Unit = {
     failure.inc()
-    time.update(Duration.fromNanos(l))
+    time.inc(Duration.fromNanos(l).toMillis.toDouble)
   }
 
   override def recordLoadSuccess(l: Long): Unit = {
     success.inc()
-    time.update(Duration.fromNanos(l))
+    time.inc(Duration.fromNanos(l).toMillis.toDouble)
   }
 
   def recordBlockingCall(): Unit = {

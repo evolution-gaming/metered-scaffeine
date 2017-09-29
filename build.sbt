@@ -31,16 +31,15 @@ scalacOptions ++= Seq(
   "-Xfuture"
 )
 
-scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits", "-no-link-warnings")
+scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits", "-no-link-warnings")
 
 resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
 
 libraryDependencies ++= Seq(
-  "com.github.blemale" %% "scaffeine" % "2.1.0",
-  "io.dropwizard.metrics" % "metrics-core" % "3.2.1",
-  "nl.grons" %% "metrics-scala" % "3.5.6",
+  "com.github.blemale" %% "scaffeine" % "2.3.0",
   "com.evolutiongaming" %% "executor-tools" % "1.0.0",
-  "org.scalatest" %% "scalatest" % "3.0.3" % Test
+  "io.prometheus" % "simpleclient_common" % "0.0.26",
+  "org.scalatest" %% "scalatest" % "3.0.4" % Test
 )
 
 licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")))
