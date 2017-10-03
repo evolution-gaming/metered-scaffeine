@@ -1,7 +1,7 @@
 package com.evolutiongaming
 
-import com.codahale.metrics.MetricRegistry
 import com.github.blemale.scaffeine.Scaffeine
+import io.prometheus.client.CollectorRegistry
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,14 +15,14 @@ package object scaffeine {
       ScalaAsyncLoadingCache(scaffeine, loader, None)
     }
 
-    def asyncCache[K, V](loader: (K) => Future[Option[V]], stats: (String, MetricRegistry))
+    def asyncCache[K, V](loader: (K) => Future[Option[V]], stats: (String, CollectorRegistry))
       (implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] = {
 
       val (name, registry) = stats
       asyncCache(name, registry)(loader)(ec)
     }
 
-    def asyncCache[K, V](name: String, registry: MetricRegistry)(loader: (K) => Future[Option[V]])
+    def asyncCache[K, V](name: String, registry: CollectorRegistry)(loader: (K) => Future[Option[V]])
       (implicit ec: ExecutionContext): ScalaAsyncLoadingCache[K, V] = {
 
       val statsCounter = new MetricsStatsCounter(registry, name)
