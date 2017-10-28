@@ -7,7 +7,8 @@ import com.github.benmanes.caffeine.cache.{AsyncLoadingCache => CaffeineAsyncLoa
 import com.github.blemale.scaffeine.{AsyncLoadingCache, Scaffeine}
 
 import scala.compat.java8.FutureConverters._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, Future, blocking}
 import scala.util.{Failure, Try}
 
 class ScalaAsyncLoadingCache[K, V](
@@ -23,10 +24,21 @@ class ScalaAsyncLoadingCache[K, V](
     }
   }
 
-  def getBlocking(key: K): Option[V] = {
-    val futureValue = underlying get key
-    if (!futureValue.isDone) statsCounter foreach { _.recordBlockingCall() }
-    Option(futureValue.get())
+  def getBlocking(key: K): Option[V] = getBlocking(key, Duration.Inf)
+
+  def getBlocking(key: K, timeout: Duration): Option[V] = {
+    val cf = underlying get key
+
+    def get = Option {
+      if (timeout.isFinite()) cf.get(timeout.length, timeout.unit)
+      else cf.get()
+    }
+
+    if (cf.isDone) get
+    else {
+      statsCounter foreach { _.recordBlockingCall() }
+      blocking(get)
+    }
   }
 }
 
