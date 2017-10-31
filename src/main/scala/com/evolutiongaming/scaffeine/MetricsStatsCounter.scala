@@ -1,17 +1,22 @@
 package com.evolutiongaming.scaffeine
 
 import com.github.benmanes.caffeine.cache.stats.{CacheStats, StatsCounter}
-import io.prometheus.client.{CollectorRegistry, Counter}
+import io.prometheus.client._
 
 import scala.concurrent.duration.Duration
 
 class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends StatsCounter {
 
-  private def createCounter(name: String): Counter = {
-    val c = Counter.build().name(s"${prefix}_$name".replaceAll("\\.", "_")).help(s"$prefix $name").create()
-    registry.register(c)
-    c
+  private def create[C <: SimpleCollector[_], B <: SimpleCollector.Builder[B, C]](builder: B, name: String): C = {
+    val collector = builder
+      .name(s"${ prefix }_$name".replaceAll("\\.", "_"))
+      .help(s"$prefix $name")
+      .create()
+    registry.register(collector)
+    collector
   }
+
+  private def createCounter(name: String): Counter = create[Counter, Counter.Builder](Counter.build(), name)
 
   private val misses = createCounter("misses")
 
@@ -27,7 +32,16 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   private val blockingCounter = createCounter("blocking_calls")
 
-  override def snapshot = new CacheStats(hits.get.toLong, misses.get.toLong, success.get.toLong, failure.get.toLong, time.get.toLong, eviction.get.toLong, 0)
+  private val gauge = create[Gauge, Gauge.Builder](Gauge.build(), "estimatedSize")
+
+  override def snapshot = new CacheStats(
+    hits.get.toLong,
+    misses.get.toLong,
+    success.get.toLong,
+    failure.get.toLong,
+    time.get.toLong,
+    eviction.get.toLong,
+    0)
 
   override def recordMisses(i: Int): Unit = misses.inc(i.toDouble)
 
@@ -47,5 +61,12 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   def recordBlockingCall(): Unit = {
     blockingCounter.inc()
+  }
+
+  def registerEstimatedSize(f: => Long): Unit = {
+    val child = new Gauge.Child() {
+      override def get() = f.toDouble
+    }
+    gauge.setChild(child)
   }
 }

@@ -53,6 +53,8 @@ object ScalaAsyncLoadingCache {
 
     val executorService = ExecutionContextExecutorServiceFactory(ec)
     val cache = scaffeine.executor(executorService).buildAsyncFuture[K, V](l).underlying
+    statsCounter foreach { _.registerEstimatedSize(cache.synchronous().estimatedSize) }
+
     new ScalaAsyncLoadingCache[K, V](cache, statsCounter)
   }
 }
