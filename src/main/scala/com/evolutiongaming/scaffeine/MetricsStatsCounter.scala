@@ -12,7 +12,8 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
       .name(s"${ prefix }_$name".replaceAll("\\.", "_"))
       .help(s"$prefix $name")
       .create()
-    registry.register(collector)
+    registry unregister collector
+    registry register collector
     collector
   }
 
