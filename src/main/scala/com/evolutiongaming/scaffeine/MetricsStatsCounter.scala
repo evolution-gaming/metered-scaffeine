@@ -12,7 +12,12 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
       .name(s"${ prefix }_$name".replaceAll("\\.", "_"))
       .help(s"$prefix $name")
       .create()
-    registry unregister collector
+
+    try {
+      registry unregister collector
+    } catch {
+      case _: NullPointerException => // unfortunately there is no way to check if a collector already registered
+    }
     registry register collector
     collector
   }
