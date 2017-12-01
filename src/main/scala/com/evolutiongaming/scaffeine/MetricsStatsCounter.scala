@@ -14,11 +14,10 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
       .create()
 
     try {
-      registry unregister collector
+      registry register collector
     } catch {
-      case _: NullPointerException => // unfortunately there is no way to check if a collector already registered
+      case _: IllegalArgumentException => // unfortunately there is no way to check if a collector already registered
     }
-    registry register collector
     collector
   }
 
