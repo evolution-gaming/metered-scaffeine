@@ -3,8 +3,6 @@ package com.evolutiongaming.scaffeine
 import com.github.benmanes.caffeine.cache.stats.{CacheStats, StatsCounter}
 import io.prometheus.client._
 
-import scala.concurrent.duration.Duration
-
 class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends StatsCounter {
 
   private def create[C <: SimpleCollector[_], B <: SimpleCollector.Builder[B, C]](builder: B, name: String): C = {
@@ -21,7 +19,9 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
     collector
   }
 
-  private def createCounter(name: String): Counter = create[Counter, Counter.Builder](Counter.build(), name)
+  private def createCounter(name: String) = create[Counter, Counter.Builder](Counter.build(), name)
+
+  private def createHistogram(name: String) = create[Histogram, Histogram.Builder](Histogram.build(), name)
 
   private val misses = createCounter("misses")
 
@@ -33,7 +33,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   private val success = createCounter("load_success")
 
-  private val time = createCounter("load_time")
+  private val loadTime = createHistogram("load_time")
 
   private val blockingCounter = createCounter("blocking_calls")
 
@@ -44,7 +44,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
     misses.get.toLong,
     success.get.toLong,
     failure.get.toLong,
-    time.get.toLong,
+    0,
     eviction.get.toLong,
     0)
 
@@ -54,14 +54,14 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   override def recordEviction(): Unit = eviction.inc()
 
-  override def recordLoadFailure(l: Long): Unit = {
+  override def recordLoadFailure(nanos: Long): Unit = {
     failure.inc()
-    time.inc(Duration.fromNanos(l).toMillis.toDouble)
+    loadTime.observe(nanos.toDouble / 1000)
   }
 
-  override def recordLoadSuccess(l: Long): Unit = {
+  override def recordLoadSuccess(nanos: Long): Unit = {
     success.inc()
-    time.inc(Duration.fromNanos(l).toMillis.toDouble)
+    loadTime.observe(nanos.toDouble / 1000)
   }
 
   def recordBlockingCall(): Unit = {
