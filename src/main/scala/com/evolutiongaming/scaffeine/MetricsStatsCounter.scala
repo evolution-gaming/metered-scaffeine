@@ -5,45 +5,66 @@ import io.prometheus.client._
 
 class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends StatsCounter {
 
-  private def create[C <: SimpleCollector[_], B <: SimpleCollector.Builder[B, C]](builder: B, name: String): C = {
-    val collector = builder
-      .name(s"${ prefix }_$name".replaceAll("\\.", "_"))
-      .help(s"$prefix $name")
-      .create()
-
+  private def register(collector: Collector): Unit = {
     try {
       registry register collector
     } catch {
       case _: IllegalArgumentException => // unfortunately there is no way to check if a collector already registered
     }
+  }
+
+  private def createCounter(name: String, help: String) = {
+    val collector = Counter.build()
+      .name(s"${ prefix }_$name")
+      .help(help)
+      .create()
+    register(collector)
     collector
   }
 
-  private def createCounter(name: String) = create[Counter, Counter.Builder](Counter.build(), name)
+  private val misses = createCounter("misses", "Misses")
 
-  private def createHistogram(name: String) = create[Histogram, Histogram.Builder](Histogram.build(), name)
+  private val hits = createCounter("hits", "Hits")
 
-  private val misses = createCounter("misses")
+  private val eviction = createCounter("evictions", "Evictions")
 
-  private val hits = createCounter("hits")
+  private val blockingCounter = createCounter("blocking_calls", "Blocking calls")
 
-  private val eviction = createCounter("evictions")
+  private val result = {
+    val collector = Counter.build()
+      .name(s"${ prefix }_load_result")
+      .help("Load result: success or failure")
+      .labelNames("result")
+      .create()
+    register(collector)
+    collector
+  }
 
-  private val failure = createCounter("load_failure")
+  private val loadTime = {
+    val collector = Summary.build()
+      .name(s"${ prefix }_load_time")
+      .help(s"Load time in millis")
+      .quantile(0.9, 0.01)
+      .quantile(0.99, 0.001)
+      .create()
+    register(collector)
+    collector
+  }
 
-  private val success = createCounter("load_success")
-
-  private val loadTime = createHistogram("load_time")
-
-  private val blockingCounter = createCounter("blocking_calls")
-
-  private val gauge = create[Gauge, Gauge.Builder](Gauge.build(), "estimatedSize")
+  private val gauge = {
+    val collector = Gauge.build()
+      .name(s"${ prefix }_estimated_size")
+      .help(s"Estimated size")
+      .create()
+    register(collector)
+    collector
+  }
 
   override def snapshot = new CacheStats(
     hits.get.toLong,
     misses.get.toLong,
-    success.get.toLong,
-    failure.get.toLong,
+    0,
+    0,
     0,
     eviction.get.toLong,
     0)
@@ -55,12 +76,12 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
   override def recordEviction(): Unit = eviction.inc()
 
   override def recordLoadFailure(nanos: Long): Unit = {
-    failure.inc()
+    result.labels("failure").inc()
     loadTime.observe(nanos.toDouble / 1000)
   }
 
   override def recordLoadSuccess(nanos: Long): Unit = {
-    success.inc()
+    result.labels("success").inc()
     loadTime.observe(nanos.toDouble / 1000)
   }
 
