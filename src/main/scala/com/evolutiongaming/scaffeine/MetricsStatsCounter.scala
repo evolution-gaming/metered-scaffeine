@@ -43,7 +43,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
   private val loadTime = {
     val collector = Summary.build()
       .name(s"${ prefix }_load_time")
-      .help(s"Load time in millis")
+      .help(s"Load time in seconds")
       .quantile(0.9, 0.01)
       .quantile(0.99, 0.001)
       .create()
@@ -77,12 +77,12 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   override def recordLoadFailure(nanos: Long): Unit = {
     result.labels("failure").inc()
-    loadTime.observe(nanos.toDouble / 1000)
+    loadTime.observe(nanos.toDouble / 1000000)
   }
 
   override def recordLoadSuccess(nanos: Long): Unit = {
     result.labels("success").inc()
-    loadTime.observe(nanos.toDouble / 1000)
+    loadTime.observe(nanos.toDouble / 1000000)
   }
 
   def recordBlockingCall(): Unit = {
