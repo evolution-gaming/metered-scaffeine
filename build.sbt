@@ -12,9 +12,9 @@ organizationHomepage := Some(url("http://evolutiongaming.com"))
 
 bintrayOrganization := Some("evolutiongaming")
 
-scalaVersion := "2.12.4"
+scalaVersion := crossScalaVersions.value.last
 
-crossScalaVersions := Seq("2.12.4", "2.11.11")
+crossScalaVersions := Seq("2.11.12", "2.12.6")
 
 releaseCrossBuild := true
 
@@ -38,8 +38,8 @@ resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
 libraryDependencies ++= Seq(
   "com.github.blemale" %% "scaffeine" % "2.5.0",
   "com.evolutiongaming" %% "executor-tools" % "1.0.0",
-  "io.prometheus" % "simpleclient_common" % "0.0.26",
-  "org.scalatest" %% "scalatest" % "3.0.4" % Test
+  "io.prometheus" % "simpleclient_common" % "0.4.0",
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test
 )
 
 licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")))

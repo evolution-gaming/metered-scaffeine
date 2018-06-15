@@ -5,7 +5,7 @@ Scaffeine cache integrated with Prometheus metrics and support for scala Executi
 
 ## Installation
 ```
-libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "3.0"
+libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "3.13"
 ```
 
 ## Installation with Dropwizard support
