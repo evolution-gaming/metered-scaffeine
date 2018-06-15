@@ -77,12 +77,12 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   override def recordLoadFailure(nanos: Long): Unit = {
     result.labels("failure").inc()
-    loadTime.observe(nanos.toDouble / 1000000)
+    loadTime.observe(nanos.toDouble / 1000000000)
   }
 
   override def recordLoadSuccess(nanos: Long): Unit = {
     result.labels("success").inc()
-    loadTime.observe(nanos.toDouble / 1000000)
+    loadTime.observe(nanos.toDouble / 1000000000)
   }
 
   def recordBlockingCall(): Unit = {
