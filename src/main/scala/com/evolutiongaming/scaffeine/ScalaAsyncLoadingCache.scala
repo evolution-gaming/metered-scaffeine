@@ -30,7 +30,7 @@ class ScalaAsyncLoadingCache[K, V](
     val cf = underlying get key
 
     def get = Option {
-      if (timeout.isFinite()) cf.get(timeout.length, timeout.unit)
+      if (timeout.isFinite) cf.get(timeout.length, timeout.unit)
       else cf.get()
     }
 
