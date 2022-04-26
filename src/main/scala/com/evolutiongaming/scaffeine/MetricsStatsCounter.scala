@@ -1,5 +1,6 @@
 package com.evolutiongaming.scaffeine
 
+import com.github.benmanes.caffeine.cache.RemovalCause
 import com.github.benmanes.caffeine.cache.stats.{CacheStats, StatsCounter}
 import io.prometheus.client._
 
@@ -60,7 +61,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
     collector
   }
 
-  override def snapshot = new CacheStats(
+  override def snapshot = CacheStats.of(
     hits.get.toLong,
     misses.get.toLong,
     0,
@@ -73,7 +74,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   override def recordHits(i: Int): Unit = hits.inc(i.toDouble)
 
-  override def recordEviction(): Unit = eviction.inc()
+  override def recordEviction(i: Int, cause: RemovalCause): Unit = eviction.inc(i.toDouble)
 
   override def recordLoadFailure(nanos: Long): Unit = {
     result.labels("failure").inc()
