@@ -1,9 +1,11 @@
 addSbtPlugin("com.evolution" % "sbt-artifactory-plugin" % "0.0.2")
 
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.9.3")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.4.4")
 
-addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.1")
+addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.3.15")
 
-addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")
+addSbtPlugin("com.github.sbt" % "sbt-release" % "1.5.0")
 
 addSbtPlugin("com.evolution" % "sbt-scalac-opts-plugin" % "0.0.9")
+
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.1")

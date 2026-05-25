@@ -8,7 +8,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   private def register(collector: Collector): Unit = {
     try {
-      registry register collector
+      registry.register(collector)
     } catch {
       case _: IllegalArgumentException => // unfortunately there is no way to check if a collector already registered
     }
@@ -68,7 +68,8 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
     0,
     0,
     eviction.get.toLong,
-    0)
+    0,
+  )
 
   override def recordMisses(i: Int): Unit = misses.inc(i.toDouble)
 
