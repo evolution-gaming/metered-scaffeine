@@ -18,7 +18,8 @@ releaseCrossBuild := true
 
 Compile / doc / scalacOptions ++= Seq("-groups", "-implicits", "-no-link-warnings")
 
-scalacOptsFailOnWarn := Some(false) // Option -Xfatal-warnings is a deprecated alias
+scalacOptions -= "-Xfatal-warnings"
+scalacOptions += "-Werror"
 
 publishTo := Some(Resolver.evolutionReleases)
 
@@ -29,7 +30,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
 )
 
-licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")))
+licenses := Seq(("MIT", url("https://opensource.org/licenses/MIT")))
 
 //addCommandAlias("check", "all versionPolicyCheck Compile/doc")
 addCommandAlias("check", "show version")

@@ -10,7 +10,7 @@ package object scaffeine {
   implicit class ScaffeineOps(val scaffeine: Scaffeine[Any, Any]) extends AnyVal {
 
     def asyncCache[K, V](
-      loader: (K) => Future[Option[V]],
+      loader: K => Future[Option[V]],
     )(implicit
       ec: ExecutionContext,
     ): ScalaAsyncLoadingCache[K, V] = {
@@ -19,7 +19,7 @@ package object scaffeine {
     }
 
     def asyncCache[K, V](
-      loader: (K) => Future[Option[V]],
+      loader: K => Future[Option[V]],
       stats: (String, CollectorRegistry),
     )(implicit
       ec: ExecutionContext,
@@ -33,7 +33,7 @@ package object scaffeine {
       name: String,
       registry: CollectorRegistry,
     )(
-      loader: (K) => Future[Option[V]],
+      loader: K => Future[Option[V]],
     )(implicit
       ec: ExecutionContext,
     ): ScalaAsyncLoadingCache[K, V] = {

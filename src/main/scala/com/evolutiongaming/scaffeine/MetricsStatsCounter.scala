@@ -93,7 +93,7 @@ class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends S
 
   def registerEstimatedSize(f: => Long): Unit = {
     val child = new Gauge.Child() {
-      override def get() = f.toDouble
+      override def get(): Double = f.toDouble
     }
     gauge.setChild(child)
   }
