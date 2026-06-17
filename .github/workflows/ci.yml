@@ -1,6 +1,9 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
 
 jobs:
   test:
@@ -10,8 +13,8 @@ jobs:
     strategy:
       matrix:
         scala:
-          - 2.13.8
-          - 2.12.15
+          - 3.8.4
+          - 2.13.18
 
     steps:
       - uses: actions/checkout@v3

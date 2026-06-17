@@ -12,22 +12,25 @@ organizationHomepage := Some(url("https://evolution.com"))
 
 scalaVersion := crossScalaVersions.value.head
 
-crossScalaVersions := Seq("2.13.8", "2.12.15")
+crossScalaVersions := Seq("3.8.4", "2.13.18")
 
 releaseCrossBuild := true
 
 Compile / doc / scalacOptions ++= Seq("-groups", "-implicits", "-no-link-warnings")
 
+scalacOptions -= "-Xfatal-warnings"
+scalacOptions += "-Werror"
+
 publishTo := Some(Resolver.evolutionReleases)
 
 libraryDependencies ++= Seq(
-  "com.github.blemale"  %% "scaffeine"           % "5.1.2",
-  "com.evolutiongaming" %% "executor-tools"      % "1.0.2",
-  "io.prometheus"        % "simpleclient_common" % "0.6.0",
-  "org.scalatest"       %% "scalatest"           % "3.0.8" % Test
+  "com.github.blemale" %% "scaffeine" % "5.3.0",
+  "com.evolutiongaming" %% "executor-tools" % "1.0.5",
+  "io.prometheus" % "simpleclient_common" % "0.6.0",
+  "org.scalatest" %% "scalatest" % "3.2.20" % Test,
 )
 
-licenses := Seq(("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")))
+licenses := Seq(("MIT", url("https://opensource.org/licenses/MIT")))
 
 //addCommandAlias("check", "all versionPolicyCheck Compile/doc")
 addCommandAlias("check", "show version")
