@@ -7,5 +7,5 @@ Scaffeine cache integrated with Prometheus metrics and support for scala Executi
 ```scala
 resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
 
-libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "3.13"
+libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "4.0.0"
 ```
