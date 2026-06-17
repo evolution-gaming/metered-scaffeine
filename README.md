@@ -4,8 +4,9 @@
 Scaffeine cache integrated with Prometheus metrics and support for scala ExecutionContext
 
 ## Installation
-```scala
-resolvers += Resolver.bintrayRepo("evolutiongaming", "maven")
 
-libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "4.0.0"
+```scala
+addSbtPlugin("com.evolution" % "sbt-artifactory-plugin" % "0.0.2")
+
+libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "4.0.1"
 ```
