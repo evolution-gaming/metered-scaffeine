@@ -32,6 +32,8 @@ libraryDependencies ++= Seq(
 
 licenses := Seq(("MIT", url("https://opensource.org/licenses/MIT")))
 
-//addCommandAlias("check", "all versionPolicyCheck Compile/doc")
-addCommandAlias("check", "show version")
+versionPolicyIntention := Compatibility.BinaryCompatible
+
+addCommandAlias("check", "all scalafmtCheckRepo versionPolicyCheck Compile/doc")
+addCommandAlias("fmt", "scalafmtRepo")
 addCommandAlias("build", "+all compile test")
