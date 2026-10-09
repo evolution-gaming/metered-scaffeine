@@ -26,7 +26,7 @@ publishTo := Some(Resolver.evolutionReleases)
 libraryDependencies ++= Seq(
   "com.github.blemale" %% "scaffeine" % "5.3.0",
   "com.evolutiongaming" %% "executor-tools" % "1.0.5",
-  "io.prometheus" % "simpleclient_common" % "0.16.0",
+  "io.prometheus" % "simpleclient_common" % "0.9.0", // scala-steward:off do not update past 0.9 due to breaking changes
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
 )
 
