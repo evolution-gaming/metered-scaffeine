@@ -2,13 +2,13 @@ name := "metered-scaffeine"
 
 organization := "com.evolutiongaming"
 
-homepage := Some(url("https://github.com/evolution-gaming/metered-scaffeine"))
+homepage := Some(uri("https://github.com/evolution-gaming/metered-scaffeine"))
 
 startYear := Some(2017)
 
 organizationName := "Evolution"
 
-organizationHomepage := Some(url("https://evolution.com"))
+organizationHomepage := Some(uri("https://evolution.com"))
 
 scalaVersion := crossScalaVersions.value.head
 
@@ -30,10 +30,10 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
 )
 
-licenses := Seq(("MIT", url("https://opensource.org/licenses/MIT")))
+licenses := Seq(("MIT", uri("https://opensource.org/licenses/MIT")))
 
 versionPolicyIntention := Compatibility.BinaryCompatible
 
 addCommandAlias("check", "all scalafmtCheckRepo versionPolicyCheck Compile/doc")
 addCommandAlias("fmt", "scalafmtRepo")
-addCommandAlias("build", "+all compile test")
+addCommandAlias("build", "+all compile testFull")
