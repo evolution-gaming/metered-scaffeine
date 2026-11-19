@@ -1,10 +1,10 @@
 package com.evolutiongaming.scaffeine
 
 import com.github.benmanes.caffeine.cache.RemovalCause
-import com.github.benmanes.caffeine.cache.stats.{CacheStats, StatsCounter}
+import com.github.benmanes.caffeine.cache.stats.CacheStats
 import io.prometheus.client._
 
-class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends StatsCounter {
+class MetricsStatsCounter(registry: CollectorRegistry, prefix: String) extends MeteredStatsCounter {
 
   private def register(collector: Collector): Unit = {
     try {
