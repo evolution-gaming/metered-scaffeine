@@ -10,3 +10,18 @@ addSbtPlugin("com.evolution" % "sbt-artifactory-plugin" % "0.0.2")
 
 libraryDependencies += "com.evolutiongaming" %% "metered-scaffeine" % "4.0.1"
 ```
+
+## Metrics
+
+Caches record their statistics with a `MeteredStatsCounter`. Pick the one for the Prometheus client you use:
+
+```scala
+// Prometheus simpleclient 0.x
+Scaffeine().asyncCache[K, V]("cache_name", collectorRegistry)(loader)
+
+// Prometheus client 1.x: add "io.prometheus" % "prometheus-metrics-core" to your dependencies first
+Scaffeine().meteredAsyncCache[K, V](new PrometheusV1MetricsStatsCounter(prometheusRegistry, "cache_name"))(loader)
+```
+
+Both expose the same metrics: `<name>_hits`, `_misses`, `_evictions`, `_blocking_calls`, `_load_result`,
+`_load_time` and `_estimated_size`. The 1.x client adds the `_total` suffix to the counters.

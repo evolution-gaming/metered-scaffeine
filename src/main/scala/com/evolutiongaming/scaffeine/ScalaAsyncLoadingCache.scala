@@ -12,7 +12,7 @@ import scala.util.{Failure, Try}
 
 class ScalaAsyncLoadingCache[K, V](
   underlying: CaffeineAsyncLoadingCache[K, V],
-  statsCounter: Option[MetricsStatsCounter] = None,
+  statsCounter: Option[MeteredStatsCounter] = None,
 ) extends AsyncLoadingCache(underlying) {
 
   def getFuture(key: K): Future[Option[V]] = {
@@ -46,7 +46,7 @@ object ScalaAsyncLoadingCache {
   def apply[K, V](
     scaffeine: Scaffeine[Any, Any],
     loader: K => Future[Option[V]],
-    statsCounter: Option[MetricsStatsCounter],
+    statsCounter: Option[MeteredStatsCounter],
   )(implicit
     ec: ExecutionContext,
   ): ScalaAsyncLoadingCache[K, V] = {
