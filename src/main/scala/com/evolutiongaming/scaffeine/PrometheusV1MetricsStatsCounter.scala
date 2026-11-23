@@ -6,19 +6,16 @@ import io.prometheus.metrics.core.metrics.{Counter, GaugeWithCallback, Summary}
 import io.prometheus.metrics.model.registry.{Collector, PrometheusRegistry}
 import io.prometheus.metrics.model.snapshots.{Unit => PrometheusUnit}
 
-import scala.concurrent.duration._
-
 /**
  * [[MeteredStatsCounter]] backed by the Prometheus client 1.x, exposing the same metrics as
  * [[MetricsStatsCounter]] does with the 0.x simpleclient. The 1.x client adds the `_total` suffix
- * to counter names on its own.
+ * to counter names on its own, and its summaries compute quantiles over a 5 minute window instead
+ * of 10.
  *
  * It is kept apart from [[MetricsStatsCounter]] because `prometheus-metrics-core` is an optional
  * dependency: only consumers who add it themselves may load classes that reference it.
  */
 class PrometheusV1MetricsStatsCounter(registry: PrometheusRegistry, prefix: String) extends MeteredStatsCounter {
-
-  import PrometheusV1MetricsStatsCounter._
 
   // like MetricsStatsCounter: when a cache with the same name already registered its metrics, keep them
   private def register[A <: Collector](collector: A): A = {
@@ -58,8 +55,6 @@ class PrometheusV1MetricsStatsCounter(registry: PrometheusRegistry, prefix: Stri
       .help("Load time in seconds")
       .quantile(0.9, 0.01)
       .quantile(0.99, 0.001)
-      .maxAgeSeconds(SummaryMaxAge.toSeconds)
-      .numberOfAgeBuckets(SummaryAgeBuckets)
       .build(),
   )
 
@@ -103,11 +98,4 @@ class PrometheusV1MetricsStatsCounter(registry: PrometheusRegistry, prefix: Stri
   def recordBlockingCall(): Unit = blockingCounter.inc()
 
   def registerEstimatedSize(f: => Long): Unit = estimatedSize = () => f
-}
-
-object PrometheusV1MetricsStatsCounter {
-
-  // the 0.x simpleclient defaults; the 1.x client defaults to a 5 minute window, which would shift the quantiles
-  private val SummaryMaxAge = 10.minutes
-  private val SummaryAgeBuckets = 5
 }

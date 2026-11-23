@@ -24,4 +24,5 @@ Scaffeine().meteredAsyncCache[K, V](new PrometheusV1MetricsStatsCounter(promethe
 ```
 
 Both expose the same metrics: `<name>_hits`, `_misses`, `_evictions`, `_blocking_calls`, `_load_result`,
-`_load_time` and `_estimated_size`. The 1.x client adds the `_total` suffix to the counters.
+`_load_time` and `_estimated_size`. The 1.x client adds the `_total` suffix to the counters, and computes the
+`_load_time` quantiles over the last 5 minutes instead of 10.
