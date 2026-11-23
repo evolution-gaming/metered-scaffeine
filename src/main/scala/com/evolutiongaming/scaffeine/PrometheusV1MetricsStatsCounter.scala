@@ -58,6 +58,7 @@ class PrometheusV1MetricsStatsCounter(registry: PrometheusRegistry, prefix: Stri
       .build(),
   )
 
+  // the gauge callback is fixed at build time, but the cache, and so its size, only exists after registerEstimatedSize
   @volatile private var estimatedSize: () => Long = () => 0L
 
   register(
