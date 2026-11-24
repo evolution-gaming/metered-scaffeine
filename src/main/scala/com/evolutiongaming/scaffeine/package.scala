@@ -38,7 +38,24 @@ package object scaffeine {
       ec: ExecutionContext,
     ): ScalaAsyncLoadingCache[K, V] = {
 
-      val statsCounter = new MetricsStatsCounter(registry, name)
+      meteredAsyncCache(new MetricsStatsCounter(registry, name))(loader)(using ec)
+    }
+
+    /**
+     * Async cache that records its statistics with the given counter, e.g. a
+     * [[PrometheusV1MetricsStatsCounter]].
+     *
+     * Not an `asyncCache` overload: one taking a single non-function argument would leave the
+     * lambda passed to `asyncCache(loader)` without a parameter type.
+     */
+    def meteredAsyncCache[K, V](
+      statsCounter: MeteredStatsCounter,
+    )(
+      loader: K => Future[Option[V]],
+    )(implicit
+      ec: ExecutionContext,
+    ): ScalaAsyncLoadingCache[K, V] = {
+
       ScalaAsyncLoadingCache(scaffeine.recordStats(() => statsCounter), loader, Some(statsCounter))
     }
   }

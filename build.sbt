@@ -27,6 +27,8 @@ libraryDependencies ++= Seq(
   "com.github.blemale" %% "scaffeine" % "5.3.0",
   "com.evolutiongaming" %% "executor-tools" % "1.0.5",
   "io.prometheus" % "simpleclient_common" % "0.6.0", // scala-steward:off
+  // optional so that consumers still on the 0.x simpleclient do not get the 1.x client on their classpath
+  "io.prometheus" % "prometheus-metrics-core" % "1.10.0" % Optional,
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
 )
 
